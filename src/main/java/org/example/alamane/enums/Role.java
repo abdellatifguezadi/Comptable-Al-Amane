@@ -1,4 +1,4 @@
-package org.example.alamane.entity;
+package org.example.alamane.enums;
 
 public enum Role {
     SOCIETE,

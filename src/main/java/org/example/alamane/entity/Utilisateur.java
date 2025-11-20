@@ -2,6 +2,8 @@ package org.example.alamane.entity;
 
 import jakarta.persistence.*;
 import lombok.Data;
+import org.example.alamane.enums.Role;
+
 import java.time.LocalDateTime;
 
 @Entity

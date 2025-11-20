@@ -2,6 +2,9 @@ package org.example.alamane.entity;
 
 import jakarta.persistence.*;
 import lombok.Data;
+import org.example.alamane.enums.StatutDocument;
+import org.example.alamane.enums.TypeDocument;
+
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;

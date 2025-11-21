@@ -29,6 +29,7 @@ public class Document {
     @Enumerated(EnumType.STRING)
     private StatutDocument statut;
 
+    private LocalDateTime dateValidation;
     private String commentaire;
     private String fichierUrl;
 
@@ -36,6 +37,6 @@ public class Document {
     @JoinColumn(name = "societe_id")
     private Societe societe;
 
-    private LocalDateTime dateCréation;
+    private LocalDateTime dateCreation;
     private LocalDateTime dateModification;
 }

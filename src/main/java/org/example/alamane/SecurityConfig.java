@@ -2,7 +2,8 @@ package org.example.alamane;
 
 import lombok.RequiredArgsConstructor;
 import org.example.alamane.security.JwtAuthenticationFilter;
-import org.example.alamane.security.JwtAuthenticationSuccessHandler;
+import org.example.alamane.security.JwtLoginFilter;
+import org.example.alamane.security.JwtUtil;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -23,23 +24,21 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 public class SecurityConfig {
 
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
-    private final JwtAuthenticationSuccessHandler successHandler;
+    private final JwtUtil jwtUtil;
 
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+    public SecurityFilterChain securityFilterChain(HttpSecurity http, AuthenticationManager authManager) throws Exception {
+        JwtLoginFilter loginFilter = new JwtLoginFilter(authManager, jwtUtil);
+
         http
                 .csrf(csrf -> csrf.disable())
+                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .headers(headers -> headers.frameOptions(frame -> frame.disable()))
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/h2-console/**", "/api/test/public", "/api/auth/**").permitAll()
+                        .requestMatchers("/h2-console/**", "/api/test/public").permitAll()
                         .anyRequest().authenticated()
                 )
-                .formLogin(form -> form
-                        .usernameParameter("email")
-                        .passwordParameter("password")
-                        .successHandler(successHandler)
-                        .permitAll()
-                )
+                .addFilter(loginFilter)
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();

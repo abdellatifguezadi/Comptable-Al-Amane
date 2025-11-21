@@ -99,6 +99,9 @@
     </dependencies>
 
     <build>
+        <finalName>
+            al-amane
+        </finalName>
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>

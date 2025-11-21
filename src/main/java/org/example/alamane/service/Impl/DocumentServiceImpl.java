@@ -39,17 +39,11 @@ public class DocumentServiceImpl implements DocumentService {
 
         String fileName = fileStorageService.storeFile(request.getFichier());
 
-        Document document = new Document();
-        document.setNumeroPiece(request.getNumeroPiece());
-        document.setType(TypeDocument.valueOf(request.getType()));
-        document.setCategorie(request.getCategorie());
-        document.setDatePiece(request.getDatePiece());
-        document.setMontant(request.getMontant());
-        document.setFournisseur(request.getFournisseur());
+        Document document = documentMapper.toEntity(request);
         document.setFichierUrl(fileName);
         document.setStatut(StatutDocument.EN_ATTENTE);
         document.setSociete(utilisateur.getSociete());
-        document.setDateCréation(LocalDateTime.now());
+        document.setDateCreation(LocalDateTime.now());
 
         Document saved = documentRepository.save(document);
         return documentMapper.toResponse(saved);
@@ -58,6 +52,59 @@ public class DocumentServiceImpl implements DocumentService {
     @Override
     public List<DocumentResponse> getDocumentsBySocieteAndExercice(Long societeId, int exercice) {
         List<Document> documents = documentRepository.findBySocieteIdAndExercice(societeId, exercice);
+        return documents.stream()
+                .map(documentMapper::toResponse)
+                .toList();
+    }
+
+    @Override
+    public List<DocumentResponse> getDocumentsEnAttente() {
+        List<Document> documents = documentRepository.findByStatut(StatutDocument.EN_ATTENTE);
+        return documents.stream()
+                .map(documentMapper::toResponse)
+                .toList();
+    }
+
+    @Override
+    @Transactional
+    public DocumentResponse validerDocument(Long documentId, String commentaire) {
+        Document document = documentRepository.findById(documentId)
+                .orElseThrow(() -> new RuntimeException("Document non trouvé"));
+
+        if(document.getStatut() != StatutDocument.EN_ATTENTE) {
+            throw new RuntimeException("Le document n'est pas en attente de validation");
+        };
+
+        document.setStatut(StatutDocument.VALIDE);
+        document.setCommentaire(commentaire);
+        document.setDateValidation(LocalDateTime.now());
+        document.setDateModification(LocalDateTime.now());
+        
+        Document saved = documentRepository.save(document);
+        return documentMapper.toResponse(saved);
+    }
+
+    @Override
+    @Transactional
+    public DocumentResponse rejeterDocument(Long documentId, String motif) {
+        Document document = documentRepository.findById(documentId)
+                .orElseThrow(() -> new RuntimeException("Document non trouvé"));
+
+        if(document.getStatut() != StatutDocument.EN_ATTENTE) {
+            throw new RuntimeException("Le document n'est pas en attente de validation");
+        };
+        document.setStatut(StatutDocument.REJETE);
+        document.setCommentaire(motif);
+        document.setDateValidation(LocalDateTime.now());
+        document.setDateModification(LocalDateTime.now());
+        
+        Document saved = documentRepository.save(document);
+        return documentMapper.toResponse(saved);
+    }
+
+    @Override
+    public List<DocumentResponse> getDocumentsBySociete(Long societeId) {
+        List<Document> documents = documentRepository.findBySocieteId(societeId);
         return documents.stream()
                 .map(documentMapper::toResponse)
                 .toList();

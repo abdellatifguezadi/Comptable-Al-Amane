@@ -14,4 +14,6 @@ public interface DocumentRepository extends JpaRepository<Document, Long> {
     List<Document> findBySocieteIdAndExercice(@Param("societeId") Long societeId, @Param("exercice") int exercice);
     
     List<Document> findByStatut(StatutDocument statut);
+    
+    List<Document> findBySocieteId(Long societeId);
 }

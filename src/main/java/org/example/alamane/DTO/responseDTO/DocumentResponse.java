@@ -18,5 +18,5 @@ public class DocumentResponse {
     private String commentaire;
     private String fichierUrl;
     private String societeRaisonSociale;
-    private LocalDateTime dateCréation;
+    private LocalDateTime dateCreation;
 }

@@ -30,12 +30,13 @@ public class DocumentController {
         return ResponseEntity.ok(response);
     }
 
-    @GetMapping("/societe/{societeId}/exercice/{exercice}")
+    @GetMapping("/exercice/{exercice}")
     @PreAuthorize("hasRole('SOCIETE')")
     public ResponseEntity<List<DocumentResponse>> getDocuments(
-            @PathVariable Long societeId,
-            @PathVariable int exercice) {
-        List<DocumentResponse> documents = documentService.getDocumentsBySocieteAndExercice(societeId, exercice);
+            @PathVariable int exercice,
+            Authentication authentication) {
+        String userEmail = authentication.getName();
+        List<DocumentResponse> documents = documentService.getDocumentsBySocieteAndExercice(userEmail ,exercice);
         return ResponseEntity.ok(documents);
     }
 

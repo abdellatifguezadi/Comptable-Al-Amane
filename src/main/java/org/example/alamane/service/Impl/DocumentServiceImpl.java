@@ -50,8 +50,10 @@ public class DocumentServiceImpl implements DocumentService {
     }
 
     @Override
-    public List<DocumentResponse> getDocumentsBySocieteAndExercice(Long societeId, int exercice) {
-        List<Document> documents = documentRepository.findBySocieteIdAndExercice(societeId, exercice);
+    public List<DocumentResponse> getDocumentsBySocieteAndExercice(String userEmail, int exercice) {
+        Utilisateur utilisateur = utilisateurRepository.findByEmail(userEmail)
+                .orElseThrow(() -> new RuntimeException("Utilisateur non trouve"));
+        List<Document> documents = documentRepository.findBySocieteIdAndExercice(utilisateur.getSociete().getId(), exercice);
         return documents.stream()
                 .map(documentMapper::toResponse)
                 .toList();
